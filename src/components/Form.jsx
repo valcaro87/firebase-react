@@ -1,41 +1,58 @@
 import { useForm } from "react-hook-form"
 
-export const Form = () => {
+export const Form = ({ handlesubmission, headerButton, currentErrors }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm()
 
-  const onSubmit = (data) => {
-    console.log(data)
+  const signUpValidation = {
+    required: "This field is required",
+    minLength: { value: 8, message: "At-least 8 characters" },
+  }
+
+  const loginValidation = {
+    required: "This field is required",
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <br />
-      <input
-        type="text"
-        placeholder="Email"
-        {...register("email", { required: true })}
-      />
+    <>
+      <h1>{headerButton}</h1>
+      <form onSubmit={handleSubmit(handlesubmission)}>
+        <div>
+          <label>
+            Email
+            <input
+              type="text"
+              name="email"
+              placeholder="Email"
+              {...register("email", { required: true })}
+            />
+          </label>
+          {errors.email && <span> This field is required </span>}
+        </div>
 
-      {errors.email && <span> This field is required </span>}
+        <div>
+          <label>
+            Password
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              {...register(
+                "password",
+                headerButton === "Login" ? loginValidation : signUpValidation
+              )}
+            />
+          </label>
+          {errors.password && <span> {errors.password.message} </span>}
+        </div>
 
-      <br />
-      <input
-        type="password"
-        placeholder="Password"
-        {...register("password", {
-          required: "This field is required",
-          minLength: { value: 8, message: "atleast 8 characters" },
-        })}
-      />
-      {errors.password && <span> {errors.password.message} </span>}
+        <div>{currentErrors}</div>
 
-      <br />
-      <br />
-      <input type="submit" />
-    </form>
+        <button type="submit">{headerButton}</button>
+      </form>
+    </>
   )
 }

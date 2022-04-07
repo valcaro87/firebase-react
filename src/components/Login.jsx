@@ -1,23 +1,22 @@
-import React, { useCallback, useContext } from "react"
+import React, { useCallback, useContext, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { app1, UserLogin } from "../base.js"
 import { AuthContext } from "./Auth.jsx"
+import { Form } from "./Form.jsx"
 
 export const Login = ({ history }) => {
   let user = UserLogin.currentUser
+  const [currentErrors, setCurrentErrors] = useState(null)
 
   const history1 = useNavigate()
   const handleLogin = useCallback(
     async (event) => {
-      event.preventDefault()
-      const { email, password } = event.target.elements
+      const { email, password } = event
       try {
-        await app1
-          .auth()
-          .signInWithEmailAndPassword(email.value, password.value)
+        await app1.auth().signInWithEmailAndPassword(email, password)
         history1("/")
       } catch (error) {
-        console.log(`error: ${error}`)
+        setCurrentErrors(error.message)
       }
     },
     [history]
@@ -28,20 +27,11 @@ export const Login = ({ history }) => {
   return (
     <>
       {!currentUser && (
-        <>
-          <h1>Log in</h1>
-          <form onSubmit={handleLogin}>
-            <label>
-              Email
-              <input name="email" type="email" placeholder="Email" />
-            </label>
-            <label>
-              Password
-              <input name="password" type="password" placeholder="Password" />
-            </label>
-            <button type="submit">Log in</button>
-          </form>
-        </>
+        <Form
+          handlesubmission={handleLogin}
+          headerButton="Login"
+          currentErrors={currentErrors}
+        />
       )}
     </>
   )
